@@ -1,0 +1,29 @@
+package cmd
+
+import (
+	"fmt"
+
+	"github.com/MiravaOrg/mirava-core/pkg"
+	"github.com/spf13/cobra"
+)
+
+func NewRootCmd(m *pkg.MiravaService) *cobra.Command {
+	cmd := &cobra.Command{
+		Use:   "Mirava CLI",
+		Short: "Testing Mirrors CLI",
+		Long:  "A tool for testing mirrors",
+		Run: func(cmd *cobra.Command, args []string) {
+			fmt.Println("Welcome to Mirava CLI")
+		},
+	}
+
+	cmd.AddCommand(NewNpmCmd(m))
+	cmd.AddCommand(NewPyPICmd(m))
+	cmd.AddCommand(NewAptCmd(m))
+	cmd.AddCommand(NewDockerCmd(m))
+	cmd.AddCommand(NewPacmanCmd(m))
+	cmd.AddCommand(NewGoCmd(m))
+	cmd.AddCommand(NewCargoCmd(m))
+
+	return cmd
+}
