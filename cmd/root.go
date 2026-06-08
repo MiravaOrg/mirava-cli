@@ -24,6 +24,7 @@ func NewRootCmd(m *pkg.MiravaService) *cobra.Command {
 	cmd.AddCommand(NewPacmanCmd(m))
 	cmd.AddCommand(NewGoCmd(m))
 	cmd.AddCommand(NewCargoCmd(m))
+	cmd.AddCommand(NewComposerCmd(m))
 
 	return cmd
 }
