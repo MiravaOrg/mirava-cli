@@ -9,7 +9,7 @@ import (
 
 func NewPyPICmd(m *pkg.MiravaService) *cobra.Command {
 	cmd := &cobra.Command{
-		Use:   "PyPI",
+		Use:   "pypi",
 		Short: "PyPI registry tools",
 		Long:  "Commands for checking PyPI registry status and packages",
 	}
