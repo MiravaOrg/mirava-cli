@@ -1,118 +1,121 @@
-name: Release
+# Mirava CLI
 
-on:
-push:
-tags:
-- "v*"
-workflow_dispatch:
-inputs:
-tag:
-description: "Release tag (e.g. v1.0.0)"
-required: true
-type: string
+A command-line tool for testing package registry mirrors. Check mirror health, verify package availability, and measure download speeds across popular ecosystems.
 
-permissions:
-contents: write
+Built on [mirava-core](https://github.com/MiravaOrg/mirava-core).
 
-env:
-BINARY_NAME: mirava-cli
+## Supported ecosystems
 
-jobs:
-build:
-name: Build ${{ matrix.goos }}/${{ matrix.goarch }}
-runs-on: ubuntu-latest
-strategy:
-fail-fast: false
-matrix:
-include:
-- goos: linux
-goarch: amd64
-- goos: linux
-goarch: arm64
-- goos: darwin
-goarch: amd64
-- goos: darwin
-goarch: arm64
-- goos: windows
-goarch: amd64
-ext: .exe
-- goos: windows
-goarch: arm64
-ext: .exe
+| Ecosystem | Commands |
+|-----------|----------|
+| npm | status, package, speed |
+| PyPI | status, package, speed |
+| Go | status, package, speed |
+| Cargo (Rust) | status, package, speed |
+| Composer (PHP) | status, package, speed |
+| Docker | status, package, speed |
+| apt (Debian/Ubuntu) | status, package, speed |
+| pacman (Arch) | status, package, speed |
 
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v4
+## Installation
 
-      - name: Set up Go
-        uses: actions/setup-go@v5
-        with:
-          go-version-file: go.mod
-          cache-dependency-path: go.sum
+### Pre-built binaries
 
-      - name: Build
-        env:
-          GOOS: ${{ matrix.goos }}
-          GOARCH: ${{ matrix.goarch }}
-          CGO_ENABLED: 0
-        run: |
-          ext="${{ matrix.ext }}"
-          artifact="${{ env.BINARY_NAME }}-${{ matrix.goos }}-${{ matrix.goarch }}"
-          go build -trimpath -ldflags="-s -w" -o "dist/${{ env.BINARY_NAME }}${ext}" .
+Download the archive for your platform from the [latest GitHub release](https://github.com/miravaOrg/mirava-cli/releases/latest).
 
-          if [ "${{ matrix.goos }}" = "windows" ]; then
-            cd dist
-            zip "../${artifact}.zip" "${{ env.BINARY_NAME }}${ext}"
-            cd ..
-          else
-            tar -czf "${artifact}.tar.gz" -C dist "${{ env.BINARY_NAME }}${ext}"
-          fi
+# Example: Linux amd64
+curl -LO https://github.com/miravaOrg/mirava-cli/releases/latest/download/mirava-cli-linux-amd64.tar.gz
+tar -xzf mirava-cli-linux-amd64.tar.gz
+sudo mv mirava-cli /usr/local/bin/
+Verify the checksum against checksums.txt in the release assets.
 
-      - name: Upload artifact
-        uses: actions/upload-artifact@v4
-        with:
-          name: ${{ env.BINARY_NAME }}-${{ matrix.goos }}-${{ matrix.goarch }}
-          path: |
-            ${{ env.BINARY_NAME }}-${{ matrix.goos }}-${{ matrix.goarch }}.tar.gz
-            ${{ env.BINARY_NAME }}-${{ matrix.goos }}-${{ matrix.goarch }}.zip
-          if-no-files-found: error
+### Build from source
 
-release:
-name: Publish release
-needs: build
-runs-on: ubuntu-latest
+Requires Go 1.26.3 or later.
 
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v4
+git clone https://github.com/miravaOrg/mirava-cli.git
+cd mirava-cli
+go build -o mirava-cli .
+## Usage
 
-      - name: Determine tag
-        id: version
-        run: |
-          if [ "${{ github.event_name }}" = "workflow_dispatch" ]; then
-            echo "tag=${{ github.event.inputs.tag }}" >> "$GITHUB_OUTPUT"
-          else
-            echo "tag=${GITHUB_REF#refs/tags/}" >> "$GITHUB_OUTPUT"
-          fi
+Each ecosystem follows the same command pattern:
 
-      - name: Download artifacts
-        uses: actions/download-artifact@v4
-        with:
-          path: dist
-          merge-multiple: true
+mirava-cli <ecosystem> <command> [args] [flags]
+### Check mirror status
 
-      - name: Generate checksums
-        run: |
-          cd dist
-          sha256sum * > checksums.txt
+Verify that a mirror responds correctly.
 
-      - name: Create GitHub release
-        uses: softprops/action-gh-release@v2
-        with:
-          tag_name: ${{ steps.version.outputs.tag }}
-          name: ${{ steps.version.outputs.tag }}
-          generate_release_notes: true
-          files: |
-            dist/*
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+mirava-cli npm status https://registry.npmmirror.com
+mirava-cli go status https://proxy.golang.org
+mirava-cli apt status https://mirrors.aliyun.com/ubuntu/
+Use -v / --verbose for detailed output (where supported).
+
+### Check package availability
+
+Confirm a specific package exists on the mirror.
+
+mirava-cli npm package https://registry.npmmirror.com lodash
+mirava-cli pypi package https://pypi.org requests
+mirava-cli cargo package https://crates.io serde
+### Measure download speed
+
+Test how fast a mirror serves package downloads.
+
+mirava-cli npm speed https://registry.npmmirror.com -p lodash -t 15
+mirava-cli go speed https://proxy.golang.org -t 10
+| Flag | Description | Default |
+|------|-------------|---------|
+| -v, --verbose | Verbose output | false |
+| -p, --package | Package name for speed tests | — |
+| -t, --timeout | Download timeout in seconds | 10 |
+
+## Examples
+
+# NPM mirror health check
+mirava-cli npm status https://registry.npmmirror.com -v
+
+# PyPI package lookup
+mirava-cli pypi package https://pypi.tuna.tsinghua.edu.cn/simple requests
+
+# Docker registry speed test
+mirava-cli docker speed https://registry-1.docker.io -p alpine -t 20
+
+# Pacman mirror status
+mirava-cli pacman status https://mirrors.kernel.org/archlinux/
+## Releasing
+
+Releases are automated via GitHub Actions.
+
+### Trigger manually (workflow dispatch)
+
+1. Open Actions → Release → Run workflow
+2. Enter a semver tag (e.g. v1.0.0)
+3. Run the workflow — binaries for all platforms are built and published to a GitHub release
+
+### Trigger via tag push
+
+git tag v1.0.0
+git push origin v1.0.0
+### Release artifacts
+
+Each release includes binaries for:
+
+- linux — amd64, arm64
+- darwin — amd64, arm64
+- windows — amd64, arm64
+
+Plus a checksums.txt with SHA-256 hashes.
+
+## Development
+
+# Run without installing
+go run .
+
+# Build locally
+go build -o mirava-cli .
+
+# Cross-compile (example)
+GOOS=linux GOARCH=arm64 go build -o mirava-cli-linux-arm64 .
+## License
+
+See the repository license file for details.
