@@ -2,7 +2,7 @@
 
 A command-line tool for testing package registry mirrors. Check mirror health, verify package availability, and measure download speeds across popular ecosystems.
 
-Built on [mirava-core](https://github.com/MiravaOrg/mirava-core).
+Built on mirava-core
 
 ## Supported ecosystems
 
