@@ -14,6 +14,3 @@ require (
 	golang.org/x/net v0.42.0 // indirect
 	golang.org/x/sync v0.19.0 // indirect
 )
-
-// TODO: remove once mirava-core v0.4.1 is pushed to GitHub.
-replace github.com/MiravaOrg/mirava-core => ../mirava-core
