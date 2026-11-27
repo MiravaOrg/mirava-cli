@@ -22,16 +22,16 @@ Built on mirava-core
 
 ### Linux
 
-Download the archive for your architecture from the [latest GitHub release](https://github.com/miravaOrg/mirava/releases/latest), or install straight from the terminal:
+Download the archive for your architecture from the [latest GitHub release](https://github.com/MiravaOrg/mirava-cli/releases/latest), or install straight from the terminal:
 
 ```bash
 # amd64 (most Linux distros)
-curl -LO https://github.com/miravaOrg/mirava/releases/latest/download/mirava-linux-amd64.tar.gz
+curl -LO https://github.com/MiravaOrg/mirava-cli/releases/latest/download/mirava-linux-amd64.tar.gz
 tar -xzf mirava-linux-amd64.tar.gz
 sudo mv mirava /usr/local/bin/
 
 # arm64 (e.g. Raspberry Pi, ARM servers)
-curl -LO https://github.com/miravaOrg/mirava/releases/latest/download/mirava-linux-arm64.tar.gz
+curl -LO https://github.com/MiravaOrg/mirava-cli/releases/latest/download/mirava-linux-arm64.tar.gz
 tar -xzf mirava-linux-arm64.tar.gz
 sudo mv mirava /usr/local/bin/
 ```
@@ -40,12 +40,12 @@ sudo mv mirava /usr/local/bin/
 
 ```bash
 # Apple Silicon (M1/M2/M3/M4)
-curl -LO https://github.com/miravaOrg/mirava/releases/latest/download/mirava-darwin-arm64.tar.gz
+curl -LO https://github.com/MiravaOrg/mirava-cli/releases/latest/download/mirava-darwin-arm64.tar.gz
 tar -xzf mirava-darwin-arm64.tar.gz
 sudo mv mirava /usr/local/bin/
 
 # Intel Mac
-curl -LO https://github.com/miravaOrg/mirava/releases/latest/download/mirava-darwin-amd64.tar.gz
+curl -LO https://github.com/MiravaOrg/mirava-cli/releases/latest/download/mirava-darwin-amd64.tar.gz
 tar -xzf mirava-darwin-amd64.tar.gz
 sudo mv mirava /usr/local/bin/
 ```
@@ -61,7 +61,7 @@ xattr -d com.apple.quarantine /usr/local/bin/mirava
 ### Windows
 
 Download the zip for your architecture from the
-[latest GitHub release](https://github.com/miravaOrg/mirava/releases/latest)
+[latest GitHub release](https://github.com/MiravaOrg/mirava-cli/releases/latest)
 (`mirava-windows-amd64.zip` for x64, `mirava-windows-arm64.zip` for
 ARM), then:
 
@@ -102,7 +102,7 @@ Compare the output with the matching line in `checksums.txt`.
 Requires Go 1.26.3 or later.
 
 ```bash
-git clone https://github.com/miravaOrg/mirava.git
+git clone https://github.com/MiravaOrg/mirava-cli.git
 cd mirava
 go build -o mirava .
 ```

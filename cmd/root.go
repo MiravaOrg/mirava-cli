@@ -38,7 +38,7 @@ func NewRootCmd(m *mirava.Mirava) *cobra.Command {
 		Short: "Testing Mirrors CLI",
 		Long:  "A tool for testing mirrors",
 		Run: func(cmd *cobra.Command, args []string) {
-			fmt.Printf("mirava version 0.0.1 -- Core version v%s\n", mirava.Version)
+			fmt.Printf("mirava cli version 0.3.1 -- Core version v%s\n", mirava.Version)
 		},
 	}
 
