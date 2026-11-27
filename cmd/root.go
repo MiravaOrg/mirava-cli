@@ -3,6 +3,7 @@ package cmd
 import (
 	"fmt"
 	"net/url"
+	"os"
 	"strings"
 
 	"github.com/MiravaOrg/mirava-core"
@@ -22,6 +23,13 @@ func normalizeMirrorURL(raw string) string {
 		return "https://" + s
 	}
 	return s
+}
+
+// fail prints an error to stderr and exits non-zero, so scripts and CI can
+// tell failures from successes. All user-facing errors go through this.
+func fail(format string, args ...interface{}) {
+	fmt.Fprintf(os.Stderr, "Error: "+format+"\n", args...)
+	os.Exit(1)
 }
 
 func NewRootCmd(m *mirava.Mirava) *cobra.Command {

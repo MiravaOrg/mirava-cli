@@ -11,8 +11,8 @@ import (
 func NewAptCmd(m *mirava.Mirava) *cobra.Command {
 	cmd := &cobra.Command{
 		Use:   "apt",
-		Short: "apt registry tools",
-		Long:  "Commands for checking apt registry status and packages",
+		Short: "APT registry tools",
+		Long:  "Commands for checking APT registry status and packages",
 	}
 
 	cmd.AddCommand(NewAptStatusCommand(m.Apt))
@@ -25,8 +25,8 @@ func NewAptCmd(m *mirava.Mirava) *cobra.Command {
 func NewUbuntuCmd(m *mirava.Mirava) *cobra.Command {
 	cmd := &cobra.Command{
 		Use:   "ubuntu",
-		Short: "Ubuntu apt registry tools",
-		Long:  "Commands for checking Ubuntu apt registry status and packages (release probing prefers Ubuntu suites)",
+		Short: "Ubuntu APT registry tools",
+		Long:  "Commands for checking Ubuntu APT registry status and packages (release probing prefers Ubuntu suites)",
 	}
 
 	cmd.AddCommand(NewAptStatusCommand(m.AptUbuntu))
@@ -39,8 +39,8 @@ func NewUbuntuCmd(m *mirava.Mirava) *cobra.Command {
 func NewDebianCmd(m *mirava.Mirava) *cobra.Command {
 	cmd := &cobra.Command{
 		Use:   "debian",
-		Short: "Debian apt registry tools",
-		Long:  "Commands for checking Debian apt registry status and packages (release probing prefers Debian suites)",
+		Short: "Debian APT registry tools",
+		Long:  "Commands for checking Debian APT registry status and packages (release probing prefers Debian suites)",
 	}
 
 	cmd.AddCommand(NewAptStatusCommand(m.AptDebian))
@@ -55,7 +55,7 @@ func NewDebianCmd(m *mirava.Mirava) *cobra.Command {
 func NewAptStatusCommand(p mirava.Prober) *cobra.Command {
 	cmd := &cobra.Command{
 		Use:   "status [url]",
-		Short: "Check apt registry status",
+		Short: "Check APT registry status",
 		Args:  cobra.ExactArgs(1),
 		Run: func(cmd *cobra.Command, args []string) {
 			ctx := cmd.Context()
@@ -63,7 +63,7 @@ func NewAptStatusCommand(p mirava.Prober) *cobra.Command {
 
 			res, err := p.Status(ctx, url)
 			if err != nil {
-				fmt.Printf("Error: %v\n", err)
+				fail("%v", err)
 				return
 			}
 
@@ -88,7 +88,7 @@ func NewAptStatusCommand(p mirava.Prober) *cobra.Command {
 func NewAptPackageCmd(p mirava.Prober) *cobra.Command {
 	cmd := &cobra.Command{
 		Use:   "package [url] [package-name]",
-		Short: "Check if a package exists in apt registry",
+		Short: "Check if a package exists in APT registry",
 		Args:  cobra.ExactArgs(2),
 		Run: func(cmd *cobra.Command, args []string) {
 			ctx := cmd.Context()
@@ -107,7 +107,7 @@ func NewAptPackageCmd(p mirava.Prober) *cobra.Command {
 				},
 			})
 			if err != nil {
-				fmt.Printf("Error: %v\n", err)
+				fail("%v", err)
 				return
 			}
 
@@ -136,7 +136,7 @@ func NewAptPackageCmd(p mirava.Prober) *cobra.Command {
 func NewAptSpeedCmd(p mirava.Prober) *cobra.Command {
 	cmd := &cobra.Command{
 		Use:   "speed [url]",
-		Short: "Test download speed from apt registry",
+		Short: "Test download speed from APT registry",
 		Args:  cobra.ExactArgs(1),
 		Run: func(cmd *cobra.Command, args []string) {
 			ctx := cmd.Context()
@@ -149,14 +149,14 @@ func NewAptSpeedCmd(p mirava.Prober) *cobra.Command {
 				Package:  packageName,
 			})
 			if err != nil {
-				fmt.Printf("Error: %v\n", err)
+				fail("%v", err)
 				return
 			}
 
 			fmt.Printf("Speed: %.2f MB/s\n", res.SpeedMBps)
 			fmt.Printf("URL: %s\n", url)
 			fmt.Printf("Package: %s\n", packageName)
-			fmt.Printf("Timeout: %v seconds\n", res.DurationSec)
+			fmt.Printf("Timeout: %.0f seconds\n", res.DurationSec)
 			fmt.Printf("Download Size: %.2f MB\n", res.DownloadedMB)
 		},
 	}

@@ -103,7 +103,7 @@ func newGetNpmCmd(m *mirava.Mirava) *cobra.Command {
 		Run: func(cmd *cobra.Command, args []string) {
 			out, err := runConfigOutput("npm", "config", "get", "registry")
 			if err != nil {
-				fmt.Printf("Error: %v\n", err)
+				fail("%v", err)
 				return
 			}
 			fmt.Printf("Registry: %s\n", out)
@@ -118,7 +118,7 @@ func newResetNpmCmd(m *mirava.Mirava) *cobra.Command {
 		Args:  cobra.NoArgs,
 		Run: func(cmd *cobra.Command, args []string) {
 			if err := runConfig("npm", []string{"config", "delete", "registry"}); err != nil {
-				fmt.Printf("Error: %v\n", err)
+				fail("%v", err)
 				return
 			}
 			fmt.Println("✅ npm registry reset to default (registry.npmjs.org)")
@@ -156,7 +156,7 @@ func newResetPyPICmd(m *mirava.Mirava) *cobra.Command {
 		Run: func(cmd *cobra.Command, args []string) {
 			if err := runConfig("pip", []string{"config", "unset", "global.index-url"}); err != nil {
 				if err2 := runConfig("pip3", []string{"config", "unset", "global.index-url"}); err2 != nil {
-					fmt.Printf("Error: %v\n", err)
+					fail("%v", err)
 					return
 				}
 			}
@@ -175,7 +175,7 @@ func newGetDockerCmd(m *mirava.Mirava) *cobra.Command {
 		Run: func(cmd *cobra.Command, args []string) {
 			mirrors, err := readDockerMirrors()
 			if err != nil {
-				fmt.Printf("Error: %v\n", err)
+				fail("%v", err)
 				return
 			}
 			if len(mirrors) == 0 {
@@ -197,7 +197,7 @@ func newResetDockerCmd(m *mirava.Mirava) *cobra.Command {
 		Args:  cobra.NoArgs,
 		Run: func(cmd *cobra.Command, args []string) {
 			if err := resetDockerMirrors(); err != nil {
-				fmt.Printf("Error: %v\n", err)
+				fail("%v", err)
 				return
 			}
 			fmt.Println("✅ docker registry mirrors removed")
@@ -280,7 +280,7 @@ func newGetPacmanCmd(m *mirava.Mirava) *cobra.Command {
 		Run: func(cmd *cobra.Command, args []string) {
 			data, err := os.ReadFile("/etc/pacman.d/mirrorlist")
 			if err != nil {
-				fmt.Printf("Error: %v\n", err)
+				fail("%v", err)
 				return
 			}
 			fmt.Println("Servers (uncommented):")
@@ -306,7 +306,7 @@ func newResetPacmanCmd(m *mirava.Mirava) *cobra.Command {
 		Args:  cobra.NoArgs,
 		Run: func(cmd *cobra.Command, args []string) {
 			if err := restoreFromBackup("/etc/pacman.d/mirrorlist"); err != nil {
-				fmt.Printf("Error: %v\n", err)
+				fail("%v", err)
 				return
 			}
 			fmt.Println("✅ pacman mirrorlist restored")
@@ -324,7 +324,7 @@ func newGetGoCmd(m *mirava.Mirava) *cobra.Command {
 		Run: func(cmd *cobra.Command, args []string) {
 			out, err := runConfigOutput("go", "env", "GOPROXY")
 			if err != nil {
-				fmt.Printf("Error: %v\n", err)
+				fail("%v", err)
 				return
 			}
 			fmt.Printf("GOPROXY: %s\n", out)
@@ -339,7 +339,7 @@ func newResetGoCmd(m *mirava.Mirava) *cobra.Command {
 		Args:  cobra.NoArgs,
 		Run: func(cmd *cobra.Command, args []string) {
 			if err := runConfig("go", []string{"env", "-w", "GOPROXY=https://proxy.golang.org,direct"}); err != nil {
-				fmt.Printf("Error: %v\n", err)
+				fail("%v", err)
 				return
 			}
 			fmt.Println("✅ GOPROXY reset to default (https://proxy.golang.org,direct)")
@@ -357,7 +357,7 @@ func newGetCargoCmd(m *mirava.Mirava) *cobra.Command {
 		Run: func(cmd *cobra.Command, args []string) {
 			home, err := os.UserHomeDir()
 			if err != nil {
-				fmt.Printf("Error: %v\n", err)
+				fail("%v", err)
 				return
 			}
 			data, err := os.ReadFile(filepath.Join(home, ".cargo", "config.toml"))
@@ -377,7 +377,7 @@ func newResetCargoCmd(m *mirava.Mirava) *cobra.Command {
 		Args:  cobra.NoArgs,
 		Run: func(cmd *cobra.Command, args []string) {
 			if err := resetCargoMirror(); err != nil {
-				fmt.Printf("Error: %v\n", err)
+				fail("%v", err)
 				return
 			}
 			fmt.Println("✅ cargo reset to default crates.io")
@@ -451,7 +451,7 @@ func newGetComposerCmd(m *mirava.Mirava) *cobra.Command {
 		Run: func(cmd *cobra.Command, args []string) {
 			out, err := runConfigOutput("composer", "config", "--global", "repositories")
 			if err != nil {
-				fmt.Printf("Error: %v\n", err)
+				fail("%v", err)
 				return
 			}
 			fmt.Printf("Repositories:\n%s\n", out)
@@ -466,7 +466,7 @@ func newResetComposerCmd(m *mirava.Mirava) *cobra.Command {
 		Args:  cobra.NoArgs,
 		Run: func(cmd *cobra.Command, args []string) {
 			if err := runConfig("composer", []string{"config", "--global", "--unset", "repositories.mirava"}); err != nil {
-				fmt.Printf("Error: %v\n", err)
+				fail("%v", err)
 				return
 			}
 			// Re-enable the official packagist that `set` disabled.
@@ -488,7 +488,7 @@ func newGetAptCmd(distro string, prober mirava.Prober) *cobra.Command {
 		Args:  cobra.NoArgs,
 		Run: func(cmd *cobra.Command, args []string) {
 			if runtime.GOOS != "linux" {
-				fmt.Println("Error: apt sources can only be read on Linux")
+				fail("apt sources can only be read on Linux")
 				return
 			}
 			fmt.Println("Classic /etc/apt/sources.list:")
@@ -515,7 +515,7 @@ func newResetAptCmd(distro string, prober mirava.Prober) *cobra.Command {
 		Args:  cobra.NoArgs,
 		Run: func(cmd *cobra.Command, args []string) {
 			if err := resetAptSources(distro); err != nil {
-				fmt.Printf("Error: %v\n", err)
+				fail("%v", err)
 				return
 			}
 			fmt.Printf("✅ apt sources restored for %s\n", distro)

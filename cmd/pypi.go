@@ -33,7 +33,7 @@ func NewPyPIStatusCmd(m *mirava.Mirava) *cobra.Command {
 
 			res, err := m.PyPi.Status(ctx, url)
 			if err != nil {
-				fmt.Printf("Error: %v\n", err)
+				fail("%v", err)
 				return
 			}
 
@@ -64,7 +64,7 @@ func NewPyPIPackageCmd(m *mirava.Mirava) *cobra.Command {
 
 			res, err := m.PyPi.Package(ctx, url, mirava.PackageQuery{Name: packageName})
 			if err != nil {
-				fmt.Printf("Error: %v\n", err)
+				fail("%v", err)
 				return
 			}
 
@@ -99,7 +99,7 @@ func NewPyPISpeedCmd(m *mirava.Mirava) *cobra.Command {
 				Package:  packageName,
 			})
 			if err != nil {
-				fmt.Printf("Error: %v\n", err)
+				fail("%v", err)
 				return
 			}
 

@@ -33,7 +33,7 @@ func NewNpmStatusCmd(m *mirava.Mirava) *cobra.Command {
 
 			res, err := m.Npm.Status(ctx, url)
 			if err != nil {
-				fmt.Printf("Error: %v\n", err)
+				fail("%v", err)
 				return
 			}
 
@@ -64,7 +64,7 @@ func NewNpmPackageCmd(m *mirava.Mirava) *cobra.Command {
 
 			res, err := m.Npm.Package(ctx, url, mirava.PackageQuery{Name: packageName})
 			if err != nil {
-				fmt.Printf("Error: %v\n", err)
+				fail("%v", err)
 				return
 			}
 
@@ -99,7 +99,7 @@ func NewNpmSpeedCmd(m *mirava.Mirava) *cobra.Command {
 				Package:  packageName,
 			})
 			if err != nil {
-				fmt.Printf("Error: %v\n", err)
+				fail("%v", err)
 				return
 			}
 

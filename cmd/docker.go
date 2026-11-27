@@ -33,7 +33,7 @@ func NewDockerStatusCommand(m *mirava.Mirava) *cobra.Command {
 
 			res, err := m.Docker.Status(ctx, url)
 			if err != nil {
-				fmt.Printf("Error: %v\n", err)
+				fail("%v", err)
 				return
 			}
 
@@ -64,7 +64,7 @@ func NewDockerPackageCmd(m *mirava.Mirava) *cobra.Command {
 
 			res, err := m.Docker.Package(ctx, url, mirava.PackageQuery{Name: imageName})
 			if err != nil {
-				fmt.Printf("Error: %v\n", err)
+				fail("%v", err)
 				return
 			}
 
@@ -97,13 +97,13 @@ func NewDockerSpeedCmd(m *mirava.Mirava) *cobra.Command {
 				Package:  packageName,
 			})
 			if err != nil {
-				fmt.Printf("Error: %v\n", err)
+				fail("%v", err)
 				return
 			}
 
 			fmt.Printf("Speed: %.2f MB/s\n", res.SpeedMBps)
 			fmt.Printf("URL: %s\n", url)
-			fmt.Printf("Package: %s\n", packageName)
+			fmt.Printf("Image: %s\n", packageName)
 			fmt.Printf("Timeout: %.0f seconds\n", res.DurationSec)
 			fmt.Printf("Download Size: %.2f MB\n", res.DownloadedMB)
 		},

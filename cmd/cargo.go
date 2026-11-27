@@ -33,7 +33,7 @@ func NewCargoStatusCmd(m *mirava.Mirava) *cobra.Command {
 
 			res, err := m.Cargo.Status(ctx, url)
 			if err != nil {
-				fmt.Printf("Error: %v\n", err)
+				fail("%v", err)
 				return
 			}
 
@@ -63,7 +63,7 @@ func NewCargoPackageCmd(m *mirava.Mirava) *cobra.Command {
 
 			res, err := m.Cargo.Package(ctx, url, mirava.PackageQuery{Name: packageName})
 			if err != nil {
-				fmt.Printf("Error: %v\n", err)
+				fail("%v", err)
 				return
 			}
 
@@ -98,7 +98,7 @@ func NewCargoSpeedCmd(m *mirava.Mirava) *cobra.Command {
 				Package:  packageName,
 			})
 			if err != nil {
-				fmt.Printf("Error: %v\n", err)
+				fail("%v", err)
 				return
 			}
 

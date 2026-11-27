@@ -33,7 +33,7 @@ func NewGoStatusCmd(m *mirava.Mirava) *cobra.Command {
 
 			res, err := m.Go.Status(ctx, url)
 			if err != nil {
-				fmt.Printf("Error: %v\n", err)
+				fail("%v", err)
 				return
 			}
 
@@ -63,7 +63,7 @@ func NewGoPackageCmd(m *mirava.Mirava) *cobra.Command {
 
 			res, err := m.Go.Package(ctx, url, mirava.PackageQuery{Name: packageName})
 			if err != nil {
-				fmt.Printf("Error: %v\n", err)
+				fail("%v", err)
 				return
 			}
 
@@ -98,7 +98,7 @@ func NewGoSpeedCmd(m *mirava.Mirava) *cobra.Command {
 				Package:  packageName,
 			})
 			if err != nil {
-				fmt.Printf("Error: %v\n", err)
+				fail("%v", err)
 				return
 			}
 

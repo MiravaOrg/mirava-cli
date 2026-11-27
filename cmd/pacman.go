@@ -33,7 +33,7 @@ func NewPacmanStatusCmd(m *mirava.Mirava) *cobra.Command {
 
 			res, err := m.Pacman.Status(ctx, url)
 			if err != nil {
-				fmt.Printf("Error: %v\n", err)
+				fail("%v", err)
 				return
 			}
 
@@ -64,7 +64,7 @@ func NewPacmanPackageCmd(m *mirava.Mirava) *cobra.Command {
 
 			res, err := m.Pacman.Package(ctx, url, mirava.PackageQuery{Name: packageName})
 			if err != nil {
-				fmt.Printf("Error: %v\n", err)
+				fail("%v", err)
 				return
 			}
 
@@ -99,7 +99,7 @@ func NewPacmanSpeedCmd(m *mirava.Mirava) *cobra.Command {
 				Package:  packageName,
 			})
 			if err != nil {
-				fmt.Printf("Error: %v\n", err)
+				fail("%v", err)
 				return
 			}
 

@@ -33,7 +33,7 @@ func NewComposerStatusCmd(m *mirava.Mirava) *cobra.Command {
 
 			res, err := m.Composer.Status(ctx, url)
 			if err != nil {
-				fmt.Printf("Error: %v\n", err)
+				fail("%v", err)
 				return
 			}
 
@@ -64,7 +64,7 @@ func NewComposerPackageCmd(m *mirava.Mirava) *cobra.Command {
 
 			res, err := m.Composer.Package(ctx, url, mirava.PackageQuery{Name: packageName})
 			if err != nil {
-				fmt.Printf("Error: %v\n", err)
+				fail("%v", err)
 				return
 			}
 
@@ -99,7 +99,7 @@ func NewComposerSpeedCmd(m *mirava.Mirava) *cobra.Command {
 				Package:  packageName,
 			})
 			if err != nil {
-				fmt.Printf("Error: %v\n", err)
+				fail("%v", err)
 				return
 			}
 

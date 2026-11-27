@@ -72,21 +72,16 @@ func newSetCmdFor(m *mirava.Mirava, use, short string, t setTarget) *cobra.Comma
 				fmt.Printf("Checking mirror %s ...\n", url)
 				res, err := t.prober.Status(cmd.Context(), url)
 				if err != nil {
-					fmt.Printf("Error: mirror check failed: %v\n", err)
-					fmt.Println("Mirror was NOT set. Use --force to set it anyway.")
-					return
+					fail("mirror check failed: %v; mirror was NOT set, use --force to set it anyway", err)
 				}
 				if !res.OK {
-					fmt.Printf("Error: mirror check failed (status %d, path %s)\n", res.StatusCode, res.WorkingPath)
-					fmt.Println("Mirror was NOT set. Use --force to set it anyway.")
-					return
+					fail("mirror check failed (status %d, path %s); mirror was NOT set, use --force to set it anyway", res.StatusCode, res.WorkingPath)
 				}
 				fmt.Printf("Mirror is up (status %d, path %s)\n", res.StatusCode, res.WorkingPath)
 			}
 
 			if err := t.apply(url); err != nil {
-				fmt.Printf("Error: %v\n", err)
-				return
+				fail("%v", err)
 			}
 			fmt.Printf("✅ %s mirror set to %s\n", use, url)
 		},
@@ -345,8 +340,8 @@ func newSetAptCmd(distro string, prober mirava.Prober) *cobra.Command {
 //     /etc/apt/sources.list.
 //   - Debian 13 (trixie) and Ubuntu 24.04+: deb822 stanzas in
 //     /etc/apt/sources.list.d/*.sources. Writing the classic format there
-//   still works but fights the distro's own .sources file, so we follow the
-//   new pattern and disable the stock one instead.
+//     still works but fights the distro's own .sources file, so we follow the
+//     new pattern and disable the stock one instead.
 func setAptSources(url, distro string) error {
 	if runtime.GOOS != "linux" {
 		return fmt.Errorf("apt sources can only be set on Linux")
