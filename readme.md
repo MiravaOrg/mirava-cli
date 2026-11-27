@@ -14,7 +14,8 @@ Built on mirava-core
 | Cargo (Rust) | `status`, `package`, `speed` |
 | Composer (PHP) | `status`, `package`, `speed` |
 | Docker | `status`, `package`, `speed` |
-| apt (Debian/Ubuntu) | `status`, `package`, `speed` |
+| apt (generic) | `status`, `package`, `speed` |
+| ubuntu / debian | `status`, `package`, `speed` |
 | pacman (Arch) | `status`, `package`, `speed` |
 
 ## Installation
@@ -60,7 +61,23 @@ mirava-cli go status https://proxy.golang.org
 mirava-cli apt status https://mirrors.aliyun.com/ubuntu/
 ```
 
-Use `-v` / `--verbose` for detailed output (where supported).
+### apt package lookup options
+
+The `apt`, `ubuntu` and `debian` commands share the same flags. When
+release/component are omitted, the backend discovers suites from the
+mirror's own `InRelease`/`Release` metadata; arch defaults to `amd64`.
+
+```bash
+mirava-cli apt package https://mirrors.aliyun.com/ubuntu/ curl -a amd64 -c main -r noble
+mirava-cli ubuntu package https://mirrors.aliyun.com/ubuntu/ curl
+mirava-cli debian package https://mirrors.aliyun.com/debian/ curl
+```
+
+| Flag | Description | Default |
+|------|-------------|---------|
+| `-a`, `--arch` | Package architecture (e.g. `amd64`, `arm64`) | `amd64` |
+| `-c`, `--component` | Repository component (e.g. `main`, `universe`) | discovered |
+| `-r`, `--release` | Release or codename (e.g. `noble`, `bookworm`) | discovered |
 
 ### Check package availability
 
@@ -83,7 +100,6 @@ mirava-cli go speed https://proxy.golang.org -t 10
 
 | Flag | Description | Default |
 |------|-------------|---------|
-| `-v`, `--verbose` | Verbose output | `false` |
 | `-p`, `--package` | Package name for speed tests | — |
 | `-t`, `--timeout` | Download timeout in seconds | `10` |
 
@@ -91,7 +107,7 @@ mirava-cli go speed https://proxy.golang.org -t 10
 
 ```bash
 # NPM mirror health check
-mirava-cli npm status https://registry.npmmirror.com -v
+mirava-cli npm status https://registry.npmmirror.com
 
 # PyPI package lookup
 mirava-cli pypi package https://pypi.tuna.tsinghua.edu.cn/simple requests

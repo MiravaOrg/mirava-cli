@@ -2,24 +2,43 @@ package cmd
 
 import (
 	"fmt"
+	"net/url"
+	"strings"
 
-	"github.com/MiravaOrg/mirava-core/pkg"
+	"github.com/MiravaOrg/mirava-core"
 	"github.com/spf13/cobra"
 )
 
-func NewRootCmd(m *pkg.MiravaService) *cobra.Command {
+// normalizeMirrorURL defaults a schemeless mirror argument to https:// so
+// `mirava-cli apt package mirror.example.com/ubuntu nginx` behaves the way
+// the user typed it. Note url.Parse reads "host.tld/path" as scheme
+// "host.tld" with empty host, so the check is on known schemes, not on
+// u.Host. URLs that already carry a scheme pass through; other malformed
+// input is left untouched for the core to report properly.
+func normalizeMirrorURL(raw string) string {
+	s := strings.TrimSpace(raw)
+	u, err := url.Parse(s)
+	if err == nil && u.Scheme != "http" && u.Scheme != "https" {
+		return "https://" + s
+	}
+	return s
+}
+
+func NewRootCmd(m *mirava.Mirava) *cobra.Command {
 	cmd := &cobra.Command{
 		Use:   "Mirava CLI",
 		Short: "Testing Mirrors CLI",
 		Long:  "A tool for testing mirrors",
 		Run: func(cmd *cobra.Command, args []string) {
-			fmt.Println("CLI version: 0.0.1 -- Core version v0.3.3")
+			fmt.Printf("CLI version: 0.0.1 -- Core version v%s\n", mirava.Version)
 		},
 	}
 
 	cmd.AddCommand(NewNpmCmd(m))
 	cmd.AddCommand(NewPyPICmd(m))
 	cmd.AddCommand(NewAptCmd(m))
+	cmd.AddCommand(NewUbuntuCmd(m))
+	cmd.AddCommand(NewDebianCmd(m))
 	cmd.AddCommand(NewDockerCmd(m))
 	cmd.AddCommand(NewPacmanCmd(m))
 	cmd.AddCommand(NewGoCmd(m))
