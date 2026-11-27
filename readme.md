@@ -60,7 +60,17 @@ mirava-cli go status https://proxy.golang.org
 mirava-cli apt status https://mirrors.aliyun.com/ubuntu/
 ```
 
-Use `-v` / `--verbose` for detailed output (where supported).
+### apt package lookup options
+
+```bash
+mirava-cli apt package https://mirrors.aliyun.com/ubuntu/ curl -a amd64 -c main -r noble
+```
+
+| Flag | Description | Default |
+|------|-------------|---------|
+| `-a`, `--arch` | Package architecture (e.g. `amd64`, `arm64`) | any served by the mirror |
+| `-c`, `--component` | Repository component (e.g. `main`, `universe`) | any |
+| `-r`, `--release` | Release or codename (e.g. `noble`, `bookworm`) | latest |
 
 ### Check package availability
 
@@ -83,7 +93,6 @@ mirava-cli go speed https://proxy.golang.org -t 10
 
 | Flag | Description | Default |
 |------|-------------|---------|
-| `-v`, `--verbose` | Verbose output | `false` |
 | `-p`, `--package` | Package name for speed tests | — |
 | `-t`, `--timeout` | Download timeout in seconds | `10` |
 
@@ -91,7 +100,7 @@ mirava-cli go speed https://proxy.golang.org -t 10
 
 ```bash
 # NPM mirror health check
-mirava-cli npm status https://registry.npmmirror.com -v
+mirava-cli npm status https://registry.npmmirror.com
 
 # PyPI package lookup
 mirava-cli pypi package https://pypi.tuna.tsinghua.edu.cn/simple requests

@@ -3,17 +3,17 @@ package cmd
 import (
 	"fmt"
 
-	"github.com/MiravaOrg/mirava-core/pkg"
+	"github.com/MiravaOrg/mirava-core"
 	"github.com/spf13/cobra"
 )
 
-func NewRootCmd(m *pkg.MiravaService) *cobra.Command {
+func NewRootCmd(m *mirava.Mirava) *cobra.Command {
 	cmd := &cobra.Command{
 		Use:   "Mirava CLI",
 		Short: "Testing Mirrors CLI",
 		Long:  "A tool for testing mirrors",
 		Run: func(cmd *cobra.Command, args []string) {
-			fmt.Println("CLI version: 0.0.1 -- Core version v0.3.3")
+			fmt.Printf("CLI version: 0.0.1 -- Core version v%s\n", mirava.Version)
 		},
 	}
 
