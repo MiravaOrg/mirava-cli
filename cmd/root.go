@@ -44,6 +44,9 @@ func NewRootCmd(m *mirava.Mirava) *cobra.Command {
 	cmd.AddCommand(NewGoCmd(m))
 	cmd.AddCommand(NewCargoCmd(m))
 	cmd.AddCommand(NewComposerCmd(m))
+	cmd.AddCommand(NewSetCmd(m))
+	cmd.AddCommand(NewGetCmd(m))
+	cmd.AddCommand(NewResetCmd(m))
 
 	return cmd
 }
