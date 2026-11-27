@@ -22,15 +22,15 @@ func NewGetCmd(m *mirava.Mirava) *cobra.Command {
 		Short: "Show the mirror currently set for a technology",
 		Long: `Show the mirror currently configured on this system.
 
-  mirava-cli get npm       show npm registry
-  mirava-cli get pypi      show pip index-url
-  mirava-cli get ubuntu    show apt sources (Ubuntu)
-  mirava-cli get debian    show apt sources (Debian)
-  mirava-cli get docker    show docker registry mirrors
-  mirava-cli get pacman    show pacman mirrorlist
-  mirava-cli get go        show GOPROXY
-  mirava-cli get cargo     show cargo registry source
-  mirava-cli get composer  show composer repositories`,
+  mirava get npm       show npm registry
+  mirava get pypi      show pip index-url
+  mirava get ubuntu    show apt sources (Ubuntu)
+  mirava get debian    show apt sources (Debian)
+  mirava get docker    show docker registry mirrors
+  mirava get pacman    show pacman mirrorlist
+  mirava get go        show GOPROXY
+  mirava get cargo     show cargo registry source
+  mirava get composer  show composer repositories`,
 	}
 
 	cmd.AddCommand(newGetNpmCmd(m))
@@ -54,15 +54,15 @@ func NewResetCmd(m *mirava.Mirava) *cobra.Command {
 		Short: "Reset a technology back to its default upstream registry",
 		Long: `Reset a technology back to its default upstream registry.
 
-  mirava-cli reset npm       reset npm registry to registry.npmjs.org
-  mirava-cli reset pypi      reset pip index-url to pypi.org
-  mirava-cli reset ubuntu    restore apt sources from backup (Ubuntu)
-  mirava-cli reset debian    restore apt sources from backup (Debian)
-  mirava-cli reset docker    remove docker registry mirrors
-  mirava-cli reset pacman    restore pacman mirrorlist from backup
-  mirava-cli reset go        reset GOPROXY to the default
-  mirava-cli reset cargo     remove the cargo mirror source
-  mirava-cli reset composer  remove the composer mirror repo`,
+  mirava reset npm       reset npm registry to registry.npmjs.org
+  mirava reset pypi      reset pip index-url to pypi.org
+  mirava reset ubuntu    restore apt sources from backup (Ubuntu)
+  mirava reset debian    restore apt sources from backup (Debian)
+  mirava reset docker    remove docker registry mirrors
+  mirava reset pacman    restore pacman mirrorlist from backup
+  mirava reset go        reset GOPROXY to the default
+  mirava reset cargo     remove the cargo mirror source
+  mirava reset composer  remove the composer mirror repo`,
 	}
 
 	cmd.AddCommand(newResetNpmCmd(m))
@@ -232,7 +232,7 @@ func resetDockerMirrors() error {
 	if runtime.GOOS != "linux" && runtime.GOOS != "darwin" {
 		return fmt.Errorf("docker daemon config can only be reset on Linux or macOS")
 	}
-	if runtime.GOOS == "linux" && os.Geteuid() != 0 {
+	if os.Geteuid() != 0 {
 		return fmt.Errorf("writing %s requires root; re-run with sudo", daemonPath)
 	}
 

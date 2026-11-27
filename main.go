@@ -1,6 +1,7 @@
 package main
 
 import (
+	"fmt"
 	"os"
 
 	"github.com/MiravaOrg/mirava-core"
@@ -15,6 +16,9 @@ func main() {
 
 	err := rootCmd.Execute()
 	if err != nil {
-		panic(err)
+		// Print the error and exit non-zero; a CLI must never dump a
+		// stack trace on its users.
+		fmt.Fprintln(os.Stderr, "Error:", err)
+		os.Exit(1)
 	}
 }

@@ -26,15 +26,15 @@ func NewSetCmd(m *mirava.Mirava) *cobra.Command {
 		Short: "Set a mirror as the active registry on this system",
 		Long: `Set a mirror as the active registry on this system with a single command.
 
-  mirava-cli set npm <url>      set npm registry
-  mirava-cli set pypi <url>     set pip index-url
-  mirava-cli set ubuntu <url>   rewrite apt sources (Ubuntu)
-  mirava-cli set debian <url>   rewrite apt sources (Debian)
-  mirava-cli set docker <url>   set docker registry mirror (daemon.json)
-  mirava-cli set pacman <url>   set pacman Server in mirrorlist
-  mirava-cli set go <url>       set GOPROXY
-  mirava-cli set cargo <url>    set cargo registry source replacement
-  mirava-cli set composer <url> set composer packagist repo
+  mirava set npm <url>      set npm registry
+  mirava set pypi <url>     set pip index-url
+  mirava set ubuntu <url>   rewrite apt sources (Ubuntu)
+  mirava set debian <url>   rewrite apt sources (Debian)
+  mirava set docker <url>   set docker registry mirror (daemon.json)
+  mirava set pacman <url>   set pacman Server in mirrorlist
+  mirava set go <url>       set GOPROXY
+  mirava set cargo <url>    set cargo registry source replacement
+  mirava set composer <url> set composer packagist repo
 
 Each target verifies the mirror is reachable before changing anything;
 pass --force to skip that check.`,
@@ -150,7 +150,9 @@ func setDockerMirror(url string) error {
 	if runtime.GOOS != "linux" && runtime.GOOS != "darwin" {
 		return fmt.Errorf("docker daemon config can only be set on Linux or macOS")
 	}
-	if runtime.GOOS == "linux" && os.Geteuid() != 0 {
+	// /etc/docker/daemon.json needs root on Linux and sudo on macOS alike;
+	// os.Geteuid() reports 0 for a sudo-ed process on both.
+	if os.Geteuid() != 0 {
 		return fmt.Errorf("writing %s requires root; re-run with sudo", daemonPath)
 	}
 

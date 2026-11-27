@@ -15,7 +15,7 @@ permissions:
   contents: write
 
 env:
-  BINARY_NAME: mirava-cli
+  BINARY_NAME: mirava
 
 jobs:
   build:

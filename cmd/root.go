@@ -11,7 +11,7 @@ import (
 )
 
 // normalizeMirrorURL defaults a schemeless mirror argument to https:// so
-// `mirava-cli apt package mirror.example.com/ubuntu nginx` behaves the way
+// `mirava apt package mirror.example.com/ubuntu nginx` behaves the way
 // the user typed it. Note url.Parse reads "host.tld/path" as scheme
 // "host.tld" with empty host, so the check is on known schemes, not on
 // u.Host. URLs that already carry a scheme pass through; other malformed
@@ -34,11 +34,11 @@ func fail(format string, args ...interface{}) {
 
 func NewRootCmd(m *mirava.Mirava) *cobra.Command {
 	cmd := &cobra.Command{
-		Use:   "Mirava CLI",
+		Use:   "mirava",
 		Short: "Testing Mirrors CLI",
 		Long:  "A tool for testing mirrors",
 		Run: func(cmd *cobra.Command, args []string) {
-			fmt.Printf("CLI version: 0.0.1 -- Core version v%s\n", mirava.Version)
+			fmt.Printf("mirava version 0.0.1 -- Core version v%s\n", mirava.Version)
 		},
 	}
 
