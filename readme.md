@@ -20,18 +20,82 @@ Built on mirava-core
 
 ## Installation
 
-### Pre-built binaries
+### Linux
 
-Download the archive for your platform from the [latest GitHub release](https://github.com/miravaOrg/mirava-cli/releases/latest).
+Download the archive for your architecture from the [latest GitHub release](https://github.com/miravaOrg/mirava-cli/releases/latest), or install straight from the terminal:
 
 ```bash
-# Example: Linux amd64
+# amd64 (most Linux distros)
 curl -LO https://github.com/miravaOrg/mirava-cli/releases/latest/download/mirava-cli-linux-amd64.tar.gz
 tar -xzf mirava-cli-linux-amd64.tar.gz
 sudo mv mirava-cli /usr/local/bin/
+
+# arm64 (e.g. Raspberry Pi, ARM servers)
+curl -LO https://github.com/miravaOrg/mirava-cli/releases/latest/download/mirava-cli-linux-arm64.tar.gz
+tar -xzf mirava-cli-linux-arm64.tar.gz
+sudo mv mirava-cli /usr/local/bin/
 ```
 
-Verify the checksum against `checksums.txt` in the release assets.
+### macOS
+
+```bash
+# Apple Silicon (M1/M2/M3/M4)
+curl -LO https://github.com/miravaOrg/mirava-cli/releases/latest/download/mirava-cli-darwin-arm64.tar.gz
+tar -xzf mirava-cli-darwin-arm64.tar.gz
+sudo mv mirava-cli /usr/local/bin/
+
+# Intel Mac
+curl -LO https://github.com/miravaOrg/mirava-cli/releases/latest/download/mirava-cli-darwin-amd64.tar.gz
+tar -xzf mirava-cli-darwin-amd64.tar.gz
+sudo mv mirava-cli /usr/local/bin/
+```
+
+On first run, macOS Gatekeeper may block the unsigned binary. Allow it under
+**System Settings → Privacy & Security** ("Allow Anyway"), or clear the
+quarantine flag directly:
+
+```bash
+xattr -d com.apple.quarantine /usr/local/bin/mirava-cli
+```
+
+### Windows
+
+Download the zip for your architecture from the
+[latest GitHub release](https://github.com/miravaOrg/mirava-cli/releases/latest)
+(`mirava-cli-windows-amd64.zip` for x64, `mirava-cli-windows-arm64.zip` for
+ARM), then:
+
+```powershell
+# In PowerShell, from your Downloads folder
+Expand-Archive mirava-cli-windows-amd64.zip -DestinationPath .
+New-Item -ItemType Directory -Force "$env:LOCALAPPDATA\Programs\mirava" | Out-Null
+Move-Item mirava-cli.exe "$env:LOCALAPPDATA\Programs\mirava\"
+```
+
+Add it to your PATH (persistent, current user):
+
+```powershell
+[Environment]::SetEnvironmentVariable("Path", [Environment]::GetEnvironmentVariable("Path", "User") + ";$env:LOCALAPPDATA\Programs\mirava", "User")
+```
+
+Open a new terminal and run `mirava-cli --help` to confirm.
+
+### Verify the download (all platforms)
+
+Each release ships a `checksums.txt` with SHA-256 hashes. Verify before installing:
+
+```bash
+# Linux / macOS
+shasum -a 256 -c checksums.txt        # macOS
+sha256sum -c checksums.txt            # Linux
+```
+
+```powershell
+# Windows (PowerShell)
+Get-FileHash mirava-cli-windows-amd64.zip -Algorithm SHA256
+```
+
+Compare the output with the matching line in `checksums.txt`.
 
 ### Build from source
 
