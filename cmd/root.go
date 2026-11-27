@@ -2,10 +2,27 @@ package cmd
 
 import (
 	"fmt"
+	"net/url"
+	"strings"
 
 	"github.com/MiravaOrg/mirava-core"
 	"github.com/spf13/cobra"
 )
+
+// normalizeMirrorURL defaults a schemeless mirror argument to https:// so
+// `mirava-cli apt package mirror.example.com/ubuntu nginx` behaves the way
+// the user typed it. Note url.Parse reads "host.tld/path" as scheme
+// "host.tld" with empty host, so the check is on known schemes, not on
+// u.Host. URLs that already carry a scheme pass through; other malformed
+// input is left untouched for the core to report properly.
+func normalizeMirrorURL(raw string) string {
+	s := strings.TrimSpace(raw)
+	u, err := url.Parse(s)
+	if err == nil && u.Scheme != "http" && u.Scheme != "https" {
+		return "https://" + s
+	}
+	return s
+}
 
 func NewRootCmd(m *mirava.Mirava) *cobra.Command {
 	cmd := &cobra.Command{

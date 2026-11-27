@@ -59,7 +59,7 @@ func NewAptStatusCommand(p mirava.Prober) *cobra.Command {
 		Args:  cobra.ExactArgs(1),
 		Run: func(cmd *cobra.Command, args []string) {
 			ctx := cmd.Context()
-			url := args[0]
+			url := normalizeMirrorURL(args[0])
 
 			res, err := p.Status(ctx, url)
 			if err != nil {
@@ -92,7 +92,7 @@ func NewAptPackageCmd(p mirava.Prober) *cobra.Command {
 		Args:  cobra.ExactArgs(2),
 		Run: func(cmd *cobra.Command, args []string) {
 			ctx := cmd.Context()
-			url := args[0]
+			url := normalizeMirrorURL(args[0])
 			packageName := args[1]
 			arch, _ := cmd.Flags().GetString("arch")
 			component, _ := cmd.Flags().GetString("component")
@@ -101,9 +101,9 @@ func NewAptPackageCmd(p mirava.Prober) *cobra.Command {
 			res, err := p.Package(ctx, url, mirava.PackageQuery{
 				Name: packageName,
 				Options: &mirava.AptQueryOptions{
-					Suite:     release,
-					Component: component,
-					Arch:      arch,
+					Suite:     release,   // empty = discover from Release metadata (latest)
+					Component: component, // empty = any, main first
+					Arch:      arch,      // empty = amd64
 				},
 			})
 			if err != nil {
@@ -142,7 +142,7 @@ func NewAptSpeedCmd(p mirava.Prober) *cobra.Command {
 			ctx := cmd.Context()
 			timeout, _ := cmd.Flags().GetInt("timeout")
 			packageName, _ := cmd.Flags().GetString("package")
-			url := args[0]
+			url := normalizeMirrorURL(args[0])
 
 			res, err := p.Speed(ctx, url, mirava.SpeedOptions{
 				Duration: time.Duration(timeout) * time.Second,

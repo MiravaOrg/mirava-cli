@@ -29,7 +29,7 @@ func NewGoStatusCmd(m *mirava.Mirava) *cobra.Command {
 		Args:  cobra.ExactArgs(1),
 		Run: func(cmd *cobra.Command, args []string) {
 			ctx := cmd.Context()
-			url := args[0]
+			url := normalizeMirrorURL(args[0])
 
 			res, err := m.Go.Status(ctx, url)
 			if err != nil {
@@ -58,7 +58,7 @@ func NewGoPackageCmd(m *mirava.Mirava) *cobra.Command {
 		Args:  cobra.ExactArgs(2),
 		Run: func(cmd *cobra.Command, args []string) {
 			ctx := cmd.Context()
-			url := args[0]
+			url := normalizeMirrorURL(args[0])
 			packageName := args[1]
 
 			res, err := m.Go.Package(ctx, url, mirava.PackageQuery{Name: packageName})
@@ -91,7 +91,7 @@ func NewGoSpeedCmd(m *mirava.Mirava) *cobra.Command {
 			ctx := cmd.Context()
 			timeout, _ := cmd.Flags().GetInt("timeout")
 			packageName, _ := cmd.Flags().GetString("package")
-			url := args[0]
+			url := normalizeMirrorURL(args[0])
 
 			res, err := m.Go.Speed(ctx, url, mirava.SpeedOptions{
 				Duration: time.Duration(timeout) * time.Second,
