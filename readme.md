@@ -8,15 +8,15 @@ Built on mirava-core
 
 | Ecosystem | Commands |
 |-----------|----------|
-| npm | `status`, `package`, `speed` |
-| PyPI | `status`, `package`, `speed` |
-| Go | `status`, `package`, `speed` |
-| Cargo (Rust) | `status`, `package`, `speed` |
-| Composer (PHP) | `status`, `package`, `speed` |
-| Docker | `status`, `package`, `speed` |
+| npm | `status`, `package`, `speed`, `set`, `get`, `reset` |
+| PyPI | `status`, `package`, `speed`, `set`, `get`, `reset` |
+| Go | `status`, `package`, `speed`, `set`, `get`, `reset` |
+| Cargo (Rust) | `status`, `package`, `speed`, `set`, `get`, `reset` |
+| Composer (PHP) | `status`, `package`, `speed`, `set`, `get`, `reset` |
+| Docker | `status`, `package`, `speed`, `set`, `get`, `reset` |
 | apt (generic) | `status`, `package`, `speed` |
-| ubuntu / debian | `status`, `package`, `speed` |
-| pacman (Arch) | `status`, `package`, `speed` |
+| ubuntu / debian | `status`, `package`, `speed`, `set`, `get`, `reset` |
+| pacman (Arch) | `status`, `package`, `speed`, `set`, `get`, `reset` |
 
 ## Installation
 
@@ -167,6 +167,74 @@ mirava-cli go speed https://proxy.golang.org -t 10
 | `-p`, `--package` | Package name for speed tests | — |
 | `-t`, `--timeout` | Download timeout in seconds | `10` |
 
+## Switching your system to a mirror
+
+Beyond testing, mirava-cli can switch your system's package tooling over to a
+mirror with a single command — and switch it back.
+
+```bash
+mirava-cli set <tech> <mirror-url>     # switch to a mirror
+mirava-cli get <tech>                  # show what is currently set
+mirava-cli reset <tech>                # restore the default upstream
+```
+
+Every `set` verifies the mirror is reachable first and aborts on failure;
+pass `--force` to skip that check. `reset` restores the default upstream
+registry (or the original config from the backup `set` made).
+
+### set
+
+```bash
+mirava-cli set npm https://registry.npmmirror.com        # npm config set registry
+mirava-cli set pypi https://pypi.tuna.tsinghua.edu.cn/simple   # pip config set global.index-url
+mirava-cli set go https://goproxy.cn                     # go env -w GOPROXY
+mirava-cli set cargo https://rustmirror.example.com      # ~/.cargo/config.toml source replacement
+mirava-cli set composer https://packagist.example.com    # composer global repo
+mirava-cli set docker https://docker.mirrors.example.com # daemon.json registry-mirrors
+mirava-cli set ubuntu https://mirrors.aliyun.com         # apt sources (Ubuntu)
+mirava-cli set debian https://mirrors.aliyun.com         # apt sources (Debian)
+mirava-cli set pacman https://mirrors.kernel.org/archlinux/  # /etc/pacman.d/mirrorlist
+```
+
+Notes:
+
+- `set ubuntu` / `set debian` refuse to run on any other distro, and write
+  the format your release actually uses: classic `/etc/apt/sources.list` on
+  older releases, deb822 `sources.list.d/mirava.sources` on Debian 13+ and
+  Ubuntu 24.04+. The original files are kept as `*.mirava-bak`.
+- `set docker` adds the mirror to `registry-mirrors` in
+  `/etc/docker/daemon.json` (preserving other keys) and reloads the daemon.
+- `set pacman` replaces `/etc/pacman.d/mirrorlist` with your mirror and runs
+  `pacman -Sy`.
+- apt, pacman and docker changes require root; run with `sudo`.
+
+### get
+
+```bash
+mirava-cli get npm       # Registry: https://registry.npmmirror.com
+mirava-cli get pypi      # Index URL: ...
+mirava-cli get go        # GOPROXY: ...
+mirava-cli get cargo     # prints ~/.cargo/config.toml
+mirava-cli get docker    # lists configured registry mirrors
+mirava-cli get ubuntu    # prints apt sources (sources.list + sources.list.d/)
+mirava-cli get pacman    # lists uncommented Server lines
+mirava-cli get composer  # prints global repositories
+```
+
+### reset
+
+```bash
+mirava-cli reset npm       # back to registry.npmjs.org
+mirava-cli reset pypi      # back to pypi.org
+mirava-cli reset go        # back to https://proxy.golang.org,direct
+mirava-cli reset cargo     # removes the mirror source from ~/.cargo/config.toml
+mirava-cli reset composer  # removes the mirror repo, re-enables packagist
+mirava-cli reset docker    # removes registry-mirrors from daemon.json
+mirava-cli reset ubuntu    # restores apt sources from the mirava backup
+mirava-cli reset debian    # restores apt sources from the mirava backup
+mirava-cli reset pacman    # restores the mirrorlist from the mirava backup
+```
+
 ## Examples
 
 ```bash
@@ -181,6 +249,11 @@ mirava-cli docker speed https://registry-1.docker.io -p alpine -t 20
 
 # Pacman mirror status
 mirava-cli pacman status https://mirrors.kernel.org/archlinux/
+
+# Switch npm to a mirror, check it, then go back
+mirava-cli set npm https://registry.npmmirror.com
+mirava-cli get npm
+mirava-cli reset npm
 ```
 
 ## Releasing
