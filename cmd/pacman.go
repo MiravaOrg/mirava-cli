@@ -30,6 +30,9 @@ func NewPacmanStatusCmd(m *mirava.Mirava) *cobra.Command {
 		Run: func(cmd *cobra.Command, args []string) {
 			ctx := cmd.Context()
 			url := normalizeMirrorURL(args[0])
+			if resolver, ok := dnsRequested(cmd); ok {
+				runDNSProbe(ctx, m, url, resolver)
+			}
 
 			res, err := m.Pacman.Status(ctx, url)
 			if err != nil {
@@ -61,6 +64,9 @@ func NewPacmanPackageCmd(m *mirava.Mirava) *cobra.Command {
 			ctx := cmd.Context()
 			url := normalizeMirrorURL(args[0])
 			packageName := args[1]
+			if resolver, ok := dnsRequested(cmd); ok {
+				runDNSProbe(ctx, m, url, resolver)
+			}
 
 			res, err := m.Pacman.Package(ctx, url, mirava.PackageQuery{Name: packageName})
 			if err != nil {
@@ -93,6 +99,9 @@ func NewPacmanSpeedCmd(m *mirava.Mirava) *cobra.Command {
 			timeout, _ := cmd.Flags().GetInt("timeout")
 			packageName, _ := cmd.Flags().GetString("package")
 			url := normalizeMirrorURL(args[0])
+			if resolver, ok := dnsRequested(cmd); ok {
+				runDNSProbe(ctx, m, url, resolver)
+			}
 
 			res, err := m.Pacman.Speed(ctx, url, mirava.SpeedOptions{
 				Duration: time.Duration(timeout) * time.Second,

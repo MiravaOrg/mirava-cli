@@ -30,6 +30,9 @@ func NewDockerStatusCommand(m *mirava.Mirava) *cobra.Command {
 		Run: func(cmd *cobra.Command, args []string) {
 			ctx := cmd.Context()
 			url := normalizeMirrorURL(args[0])
+			if resolver, ok := dnsRequested(cmd); ok {
+				runDNSProbe(ctx, m, url, resolver)
+			}
 
 			res, err := m.Docker.Status(ctx, url)
 			if err != nil {
@@ -61,6 +64,9 @@ func NewDockerPackageCmd(m *mirava.Mirava) *cobra.Command {
 			ctx := cmd.Context()
 			url := normalizeMirrorURL(args[0])
 			imageName := args[1]
+			if resolver, ok := dnsRequested(cmd); ok {
+				runDNSProbe(ctx, m, url, resolver)
+			}
 
 			res, err := m.Docker.Package(ctx, url, mirava.PackageQuery{Name: imageName})
 			if err != nil {
@@ -91,6 +97,9 @@ func NewDockerSpeedCmd(m *mirava.Mirava) *cobra.Command {
 			timeout, _ := cmd.Flags().GetInt("timeout")
 			packageName, _ := cmd.Flags().GetString("package")
 			url := normalizeMirrorURL(args[0])
+			if resolver, ok := dnsRequested(cmd); ok {
+				runDNSProbe(ctx, m, url, resolver)
+			}
 
 			res, err := m.Docker.Speed(ctx, url, mirava.SpeedOptions{
 				Duration: time.Duration(timeout) * time.Second,

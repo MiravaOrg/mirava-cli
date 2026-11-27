@@ -56,5 +56,7 @@ func NewRootCmd(m *mirava.Mirava) *cobra.Command {
 	cmd.AddCommand(NewGetCmd(m))
 	cmd.AddCommand(NewResetCmd(m))
 
+	addDNSFlag(cmd)
+
 	return cmd
 }

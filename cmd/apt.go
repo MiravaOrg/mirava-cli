@@ -15,9 +15,9 @@ func NewAptCmd(m *mirava.Mirava) *cobra.Command {
 		Long:  "Commands for checking APT registry status and packages",
 	}
 
-	cmd.AddCommand(NewAptStatusCommand(m.Apt))
-	cmd.AddCommand(NewAptPackageCmd(m.Apt))
-	cmd.AddCommand(NewAptSpeedCmd(m.Apt))
+	cmd.AddCommand(NewAptStatusCommand(m, m.Apt))
+	cmd.AddCommand(NewAptPackageCmd(m, m.Apt))
+	cmd.AddCommand(NewAptSpeedCmd(m, m.Apt))
 
 	return cmd
 }
@@ -29,9 +29,9 @@ func NewUbuntuCmd(m *mirava.Mirava) *cobra.Command {
 		Long:  "Commands for checking Ubuntu APT registry status and packages (release probing prefers Ubuntu suites)",
 	}
 
-	cmd.AddCommand(NewAptStatusCommand(m.AptUbuntu))
-	cmd.AddCommand(NewAptPackageCmd(m.AptUbuntu))
-	cmd.AddCommand(NewAptSpeedCmd(m.AptUbuntu))
+	cmd.AddCommand(NewAptStatusCommand(m, m.AptUbuntu))
+	cmd.AddCommand(NewAptPackageCmd(m, m.AptUbuntu))
+	cmd.AddCommand(NewAptSpeedCmd(m, m.AptUbuntu))
 
 	return cmd
 }
@@ -43,16 +43,16 @@ func NewDebianCmd(m *mirava.Mirava) *cobra.Command {
 		Long:  "Commands for checking Debian APT registry status and packages (release probing prefers Debian suites)",
 	}
 
-	cmd.AddCommand(NewAptStatusCommand(m.AptDebian))
-	cmd.AddCommand(NewAptPackageCmd(m.AptDebian))
-	cmd.AddCommand(NewAptSpeedCmd(m.AptDebian))
+	cmd.AddCommand(NewAptStatusCommand(m, m.AptDebian))
+	cmd.AddCommand(NewAptPackageCmd(m, m.AptDebian))
+	cmd.AddCommand(NewAptSpeedCmd(m, m.AptDebian))
 
 	return cmd
 }
 
 // NewAptStatusCommand builds the status subcommand for a specific apt
 // backend (generic, Ubuntu or Debian flavored).
-func NewAptStatusCommand(p mirava.Prober) *cobra.Command {
+func NewAptStatusCommand(am *mirava.Mirava, p mirava.Prober) *cobra.Command {
 	cmd := &cobra.Command{
 		Use:   "status [url]",
 		Short: "Check APT registry status",
@@ -60,6 +60,9 @@ func NewAptStatusCommand(p mirava.Prober) *cobra.Command {
 		Run: func(cmd *cobra.Command, args []string) {
 			ctx := cmd.Context()
 			url := normalizeMirrorURL(args[0])
+			if resolver, ok := dnsRequested(cmd); ok {
+				runDNSProbe(ctx, am, url, resolver)
+			}
 
 			res, err := p.Status(ctx, url)
 			if err != nil {
@@ -85,7 +88,7 @@ func NewAptStatusCommand(p mirava.Prober) *cobra.Command {
 // NewAptPackageCmd builds the package subcommand. When the user omits
 // release/component the backend discovers suites from the mirror's own
 // Release metadata; arch defaults to amd64 (what mirrors serve).
-func NewAptPackageCmd(p mirava.Prober) *cobra.Command {
+func NewAptPackageCmd(am *mirava.Mirava, p mirava.Prober) *cobra.Command {
 	cmd := &cobra.Command{
 		Use:   "package [url] [package-name]",
 		Short: "Check if a package exists in APT registry",
@@ -94,6 +97,9 @@ func NewAptPackageCmd(p mirava.Prober) *cobra.Command {
 			ctx := cmd.Context()
 			url := normalizeMirrorURL(args[0])
 			packageName := args[1]
+			if resolver, ok := dnsRequested(cmd); ok {
+				runDNSProbe(ctx, am, url, resolver)
+			}
 			arch, _ := cmd.Flags().GetString("arch")
 			component, _ := cmd.Flags().GetString("component")
 			release, _ := cmd.Flags().GetString("release")
@@ -133,7 +139,7 @@ func NewAptPackageCmd(p mirava.Prober) *cobra.Command {
 }
 
 // NewAptSpeedCmd builds the speed subcommand for a specific apt backend.
-func NewAptSpeedCmd(p mirava.Prober) *cobra.Command {
+func NewAptSpeedCmd(am *mirava.Mirava, p mirava.Prober) *cobra.Command {
 	cmd := &cobra.Command{
 		Use:   "speed [url]",
 		Short: "Test download speed from APT registry",
@@ -143,6 +149,9 @@ func NewAptSpeedCmd(p mirava.Prober) *cobra.Command {
 			timeout, _ := cmd.Flags().GetInt("timeout")
 			packageName, _ := cmd.Flags().GetString("package")
 			url := normalizeMirrorURL(args[0])
+			if resolver, ok := dnsRequested(cmd); ok {
+				runDNSProbe(ctx, am, url, resolver)
+			}
 
 			res, err := p.Speed(ctx, url, mirava.SpeedOptions{
 				Duration: time.Duration(timeout) * time.Second,

@@ -30,6 +30,9 @@ func NewCargoStatusCmd(m *mirava.Mirava) *cobra.Command {
 		Run: func(cmd *cobra.Command, args []string) {
 			ctx := cmd.Context()
 			url := normalizeMirrorURL(args[0])
+			if resolver, ok := dnsRequested(cmd); ok {
+				runDNSProbe(ctx, m, url, resolver)
+			}
 
 			res, err := m.Cargo.Status(ctx, url)
 			if err != nil {
@@ -60,6 +63,9 @@ func NewCargoPackageCmd(m *mirava.Mirava) *cobra.Command {
 			ctx := cmd.Context()
 			url := normalizeMirrorURL(args[0])
 			packageName := args[1]
+			if resolver, ok := dnsRequested(cmd); ok {
+				runDNSProbe(ctx, m, url, resolver)
+			}
 
 			res, err := m.Cargo.Package(ctx, url, mirava.PackageQuery{Name: packageName})
 			if err != nil {
@@ -92,6 +98,9 @@ func NewCargoSpeedCmd(m *mirava.Mirava) *cobra.Command {
 			timeout, _ := cmd.Flags().GetInt("timeout")
 			packageName, _ := cmd.Flags().GetString("package")
 			url := normalizeMirrorURL(args[0])
+			if resolver, ok := dnsRequested(cmd); ok {
+				runDNSProbe(ctx, m, url, resolver)
+			}
 
 			res, err := m.Cargo.Speed(ctx, url, mirava.SpeedOptions{
 				Duration: time.Duration(timeout) * time.Second,
