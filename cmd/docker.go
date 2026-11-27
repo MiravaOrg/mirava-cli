@@ -86,7 +86,6 @@ func NewDockerSpeedCmd(m *mirava.Mirava) *cobra.Command {
 	cmd := &cobra.Command{
 		Use:   "speed [url]",
 		Short: "Test download speed from Docker registry",
-		Args:  cobra.ExactArgs(1),
 		Run: func(cmd *cobra.Command, args []string) {
 			ctx := cmd.Context()
 			timeout, _ := cmd.Flags().GetInt("timeout")
