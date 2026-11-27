@@ -20,6 +20,8 @@ func NewRootCmd(m *mirava.Mirava) *cobra.Command {
 	cmd.AddCommand(NewNpmCmd(m))
 	cmd.AddCommand(NewPyPICmd(m))
 	cmd.AddCommand(NewAptCmd(m))
+	cmd.AddCommand(NewUbuntuCmd(m))
+	cmd.AddCommand(NewDebianCmd(m))
 	cmd.AddCommand(NewDockerCmd(m))
 	cmd.AddCommand(NewPacmanCmd(m))
 	cmd.AddCommand(NewGoCmd(m))

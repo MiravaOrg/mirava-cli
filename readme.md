@@ -14,7 +14,8 @@ Built on [mirava-core](https://github.com/MiravaOrg/mirava-core).
 | Cargo (Rust) | `status`, `package`, `speed` |
 | Composer (PHP) | `status`, `package`, `speed` |
 | Docker | `status`, `package`, `speed` |
-| apt (Debian/Ubuntu) | `status`, `package`, `speed` |
+| apt (generic) | `status`, `package`, `speed` |
+| ubuntu / debian | `status`, `package`, `speed` |
 | pacman (Arch) | `status`, `package`, `speed` |
 
 ## Installation
@@ -62,15 +63,21 @@ mirava-cli apt status https://mirrors.aliyun.com/ubuntu/
 
 ### apt package lookup options
 
+The `apt`, `ubuntu` and `debian` commands share the same flags. When
+release/component are omitted, the backend discovers suites from the
+mirror's own `InRelease`/`Release` metadata; arch defaults to `amd64`.
+
 ```bash
 mirava-cli apt package https://mirrors.aliyun.com/ubuntu/ curl -a amd64 -c main -r noble
+mirava-cli ubuntu package https://mirrors.aliyun.com/ubuntu/ curl
+mirava-cli debian package https://mirrors.aliyun.com/debian/ curl
 ```
 
 | Flag | Description | Default |
 |------|-------------|---------|
-| `-a`, `--arch` | Package architecture (e.g. `amd64`, `arm64`) | any served by the mirror |
-| `-c`, `--component` | Repository component (e.g. `main`, `universe`) | any |
-| `-r`, `--release` | Release or codename (e.g. `noble`, `bookworm`) | latest |
+| `-a`, `--arch` | Package architecture (e.g. `amd64`, `arm64`) | `amd64` |
+| `-c`, `--component` | Repository component (e.g. `main`, `universe`) | discovered |
+| `-r`, `--release` | Release or codename (e.g. `noble`, `bookworm`) | discovered |
 
 ### Check package availability
 
