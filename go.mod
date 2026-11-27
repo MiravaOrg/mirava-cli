@@ -3,7 +3,7 @@ module github.com/miravaOrg/mirava-cli
 go 1.26.3
 
 require (
-	github.com/MiravaOrg/mirava-core v0.4.4
+	github.com/MiravaOrg/mirava-core v0.4.5
 	github.com/spf13/cobra v1.10.2
 )
 
